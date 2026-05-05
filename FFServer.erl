@@ -3,7 +3,7 @@
 
 start() ->
     io:format("~n=== FAST-FOOD : La cuisine est ouverte ! ===~n"),
-    Pid = spawn('fast-food', client, [self(), []]),
+    Pid = spawn('fast-food-client', client, [self(), []]),
     loop_serveur(Pid).
 
 loop_serveur(Pid) ->
