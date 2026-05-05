@@ -1,5 +1,5 @@
 -module(ffclient).
--export([client/2, afficher_menu/2, lire_choix/0, traiter_choix/3]).
+-export([client/2, afficher_menu/0, lire_choix/0, traiter_choix/3]).
 
 client(Pid, Commande) ->
     afficher_menu(),
