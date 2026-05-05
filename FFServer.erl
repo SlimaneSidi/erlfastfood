@@ -1,9 +1,9 @@
--module('FFServer').
--export([start/0]).
+-module(ffserver).
+-export([start/0, loop_serveur/1]).
 
 start() ->
     io:format("~n=== FAST-FOOD : La cuisine est ouverte ! ===~n"),
-    Pid = spawn('FFClient', client, [self(), []]),
+    Pid = spawn('ffclient', client, [self(), []]),
     loop_serveur(Pid).
 
 loop_serveur(Pid) ->
