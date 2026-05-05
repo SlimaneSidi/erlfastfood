@@ -16,21 +16,21 @@ afficher_menu() ->
     io:format("============================~n").
 
 lire_choix() ->
-    case io:read("Votre choix : ") of
-        {ok, Choix} -> Choix;
+    case io:fread("Votre choix : ", "~d") of
+        {ok, [Choix]} -> Choix;
         _ -> 0
     end.
 
 traiter_choix(Pid, 1, Commande) ->
-    io:format("CLIENT : Je commande un Burger !~n"),
+    io:format("CLIENT : Je commande un Burger.~n"),
     Pid ! {self(), burger},
     client(Pid, [burger | Commande]);
 traiter_choix(Pid, 2, Commande) ->
-    io:format("CLIENT : Je commande des Frites !~n"),
+    io:format("CLIENT : Je commande des Frites.~n"),
     Pid ! {self(), frites},
     client(Pid, [frites | Commande]);
 traiter_choix(Pid, 3, Commande) ->
-    io:format("CLIENT : Je commande une Boisson !~n"),
+    io:format("CLIENT : Je commande une Boisson.~n"),
     Pid ! {self(), boisson},
     client(Pid, [boisson | Commande]);
 traiter_choix(Pid, 4, Commande) ->

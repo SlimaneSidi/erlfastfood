@@ -1,25 +1,25 @@
 -module(ffserver).
--export([start/0, loop_serveur/1]).
+-export([start/0, loop_serveur/0]).
 
 start() ->
     io:format("~n=== FAST-FOOD : La cuisine est ouverte ! ===~n"),
-    Pid = spawn('ffclient', client, [self(), []]),
-    loop_serveur(Pid).
+    ServerPid = spawn(?MODULE, loop_serveur, []),
+    ffclient:client(ServerPid, []).
 
-loop_serveur(Pid) ->
+loop_serveur() ->
     receive
-        {Pid, burger} ->
+        {_From, burger} ->
             io:format("CUISINE : Burger en préparation... prêt !~n"),
-            loop_serveur(Pid);
-        {Pid, frites} ->
+            loop_serveur();
+        {_From, frites} ->
             io:format("CUISINE : Frites en préparation... prêtes !~n"),
-            loop_serveur(Pid);
-        {Pid, boisson} ->
+            loop_serveur();
+        {_From, boisson} ->
             io:format("CUISINE : Boisson en préparation... prête !~n"),
-            loop_serveur(Pid);
-        {Pid, {recap, Liste}} ->
+            loop_serveur();
+        {_From, {recap, Liste}} ->
             io:format("CUISINE : Récapitulatif : ~p~n", [Liste]),
-            loop_serveur(Pid);
-        {Pid, fin} ->
+            loop_serveur();
+        {_From, fin} ->
             io:format("CUISINE : Commande terminée. Bonne dégustation !~n")
     end.
