@@ -1,4 +1,4 @@
--module('fast-food-client').
+-module('FFClient').
 -export([client/2]).
 
 client(Pid, Commande) ->
