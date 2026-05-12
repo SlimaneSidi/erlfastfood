@@ -47,7 +47,9 @@ traiter_choix(Pid, 4, Commande) ->
     Pid ! {self(), {recap, Commande}},
     client(Pid, Commande);
 traiter_choix(Pid, 5, Commande) ->
-    io:format("CLIENT : Je valide : ~p~n", [Commande]),
+    Total = calculer_total(Commande),
+    io:format("CLIENT : Je valide ma commande d'un montant de ~.2f EUR.~n", [Total]),
+    io:format("Détail : ~p~n", [Commande]),
     Pid ! {self(), fin};
 traiter_choix(Pid, 6, []) ->
     io:format("CLIENT : Le panier est vide, rien à supprimer.~n"),
@@ -72,3 +74,12 @@ traiter_choix(Pid, 6, Commande) ->
 traiter_choix(Pid, _, Commande) ->
     io:format("Choix invalide.~n"),
     client(Pid, Commande).
+
+calculer_total(Liste) ->
+    Prices = [{burger, 3.50}, {frites, 1.50}, {boisson, 1.00}],
+    lists:foldl(fun(Item, Acc) ->
+        case lists:keyfind(Item, 1, Prices) of
+            {_, Price} -> Acc + Price;
+            false -> Acc
+        end
+    end, 0.0, Liste).
