@@ -1,10 +1,10 @@
 -module(ffclient).
--export([client/2, afficher_menu/1, lire_choix/0, traiter_choix/3]).
+-export([client/2, afficher_menu/1, lire_choix/0, traiter_choix/3, calculer_total/1]).
 
-client(Pid, Commande) ->
+client(Dest, Commande) ->
     afficher_menu(Commande),
     Choice = lire_choix(),
-    traiter_choix(Pid, Choice, Commande).
+    traiter_choix(Dest, Choice, Commande).
 
 afficher_menu([]) ->
     io:format("~n====== FAST-FOOD MENU ======~n"),
@@ -30,50 +30,47 @@ lire_choix() ->
         _ -> 0
     end.
 
-traiter_choix(Pid, 1, Commande) ->
+traiter_choix(Dest, 1, Commande) ->
     io:format("CLIENT : Je commande un Burger.~n"),
-    Pid ! {self(), burger},
-    client(Pid, [burger | Commande]);
-traiter_choix(Pid, 2, Commande) ->
+    Dest ! {self(), burger},
+    client(Dest, [burger | Commande]);
+traiter_choix(Dest, 2, Commande) ->
     io:format("CLIENT : Je commande des Frites.~n"),
-    Pid ! {self(), frites},
-    client(Pid, [frites | Commande]);
-traiter_choix(Pid, 3, Commande) ->
+    Dest ! {self(), frites},
+    client(Dest, [frites | Commande]);
+traiter_choix(Dest, 3, Commande) ->
     io:format("CLIENT : Je commande une Boisson.~n"),
-    Pid ! {self(), boisson},
-    client(Pid, [boisson | Commande]);
-traiter_choix(Pid, 4, Commande) ->
+    Dest ! {self(), boisson},
+    client(Dest, [boisson | Commande]);
+traiter_choix(Dest, 4, Commande) ->
     io:format("CLIENT : Ma commande : ~p~n", [Commande]),
-    Pid ! {self(), {recap, Commande}},
-    client(Pid, Commande);
-traiter_choix(Pid, 5, Commande) ->
+    Dest ! {self(), {recap, Commande}},
+    client(Dest, Commande);
+traiter_choix(Dest, 5, Commande) ->
     Total = calculer_total(Commande),
     io:format("CLIENT : Je valide ma commande d'un montant de ~.2f EUR.~n", [Total]),
     io:format("Détail : ~p~n", [Commande]),
-    Pid ! {self(), fin};
-traiter_choix(Pid, 6, []) ->
-    io:format("CLIENT : Le panier est vide, rien à supprimer.~n"),
-    client(Pid, []);
-traiter_choix(Pid, 6, Commande) ->
+    Dest ! {self(), fin};
+traiter_choix(Dest, 6, Commande) ->
     io:format("Quel article supprimer ? (burger, frites, boisson) : "),
     case io:fread("", "~a") of
         {ok, [Article]} ->
             case lists:member(Article, Commande) of
                 true ->
                     io:format("CLIENT : Je supprime ~p.~n", [Article]),
-                    Pid ! {self(), {supprimer, Article}},
-                    client(Pid, lists:delete(Article, Commande));
+                    Dest ! {self(), {supprimer, Article}},
+                    client(Dest, lists:delete(Article, Commande));
                 false ->
                     io:format("CLIENT : Cet article n'est pas dans le panier.~n"),
-                    client(Pid, Commande)
+                    client(Dest, Commande)
             end;
         _ ->
             io:format("Entrée invalide.~n"),
-            client(Pid, Commande)
+            client(Dest, Commande)
     end;
-traiter_choix(Pid, _, Commande) ->
+traiter_choix(Dest, _, Commande) ->
     io:format("Choix invalide.~n"),
-    client(Pid, Commande).
+    client(Dest, Commande).
 
 calculer_total(Liste) ->
     Prices = [{burger, 3.50}, {frites, 1.50}, {boisson, 1.00}],

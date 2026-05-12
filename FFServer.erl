@@ -1,10 +1,19 @@
 -module(ffserver).
--export([start/0, loop_serveur/0]).
+-export([start/0, start_remote/0, loop_serveur/0]).
 
+%% Lance le serveur et un client local (test sur une seule machine)
 start() ->
-    io:format("~n=== FAST-FOOD : La cuisine est ouverte ! ===~n"),
+    io:format("~n=== FAST-FOOD : La cuisine est ouverte (Local) ! ===~n"),
     ServerPid = spawn(?MODULE, loop_serveur, []),
-    ffclient:client(ServerPid, []).
+    register(la_cuisine, ServerPid),
+    ffclient:client(la_cuisine, []).
+
+%% Lance le serveur seul pour les connexions réseaux
+start_remote() ->
+    io:format("~n=== FAST-FOOD : La cuisine est ouverte (Réseau) ! ===~n"),
+    ServerPid = spawn(?MODULE, loop_serveur, []),
+    register(la_cuisine, ServerPid),
+    io:format("En attente de clients sur le nœud : ~p~n", [node()]).
 
 loop_serveur() ->
     receive
