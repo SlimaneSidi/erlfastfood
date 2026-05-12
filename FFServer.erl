@@ -20,6 +20,9 @@ loop_serveur() ->
         {_From, {recap, Liste}} ->
             io:format("CUISINE : Récapitulatif : ~p~n", [Liste]),
             loop_serveur();
+        {_From, {supprimer, Article}} ->
+            io:format("CUISINE : Article ~p annulé.~n", [Article]),
+            loop_serveur();
         {_From, fin} ->
             io:format("CUISINE : Commande terminée. Bonne dégustation !~n")
     end.
