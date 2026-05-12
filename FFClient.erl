@@ -1,12 +1,20 @@
 -module(ffclient).
--export([client/2, afficher_menu/0, lire_choix/0, traiter_choix/3]).
+-export([client/2, afficher_menu/1, lire_choix/0, traiter_choix/3]).
 
 client(Pid, Commande) ->
-    afficher_menu(),
+    afficher_menu(Commande),
     Choice = lire_choix(),
     traiter_choix(Pid, Choice, Commande).
 
-afficher_menu() ->
+afficher_menu([]) ->
+    io:format("~n====== FAST-FOOD MENU ======~n"),
+    io:format("1 - Burger (3.50 EUR)~n"),
+    io:format("2 - Frites (1.50 EUR)~n"),
+    io:format("3 - Boisson (1.00 EUR)~n"),
+    io:format("4 - Voir ma commande~n"),
+    io:format("5 - Valider et quitter~n"),
+    io:format("============================~n");
+afficher_menu(_Commande) ->
     io:format("~n====== FAST-FOOD MENU ======~n"),
     io:format("1 - Burger (3.50 EUR)~n"),
     io:format("2 - Frites (1.50 EUR)~n"),
