@@ -1,30 +1,31 @@
-# 🍔 Projet ErlFastFood - Version Distribuée
+# ErlFastFood
 
-## 🚀 Guide d'utilisation en réseau
+Projet fast-food en Erlang
 
-### 1. Sur l'ordinateur SERVEUR (IP: 192.168.1.XX)
-Ouvrez un terminal et lancez Erlang avec un nom et un cookie :
-```bash
-werl -name cuisine@192.168.1.XX -setcookie miam
-```
-Dans le shell Erlang :
-```erlang
+#### Membres : Mathis MESSINGUIRAL, Ange Vanessa MANDJEU SAPPELLE, Roche Kevin EKO'O MEKULU, Robin NULLANS.
+
+## Option 1 : Test local
+
+c(ffserver).
+c(ffclient).
+ffserver:start().
+
+## Option 2 : Mode réseau
+
+### Coté Serveur (IP ex : 192.168.1.10)
+
+erl -name nom_du_noeud@192.168.1.10 -setcookie nom_cookie
+
 c(ffserver).
 c(ffclient).
 ffserver:start_remote().
-```
 
-### 2. Sur l'ordinateur CLIENT
-Ouvrez un terminal et lancez Erlang avec le **même cookie** :
-```bash
-werl -name client1@192.168.1.YY -setcookie miam
-```
-Dans le shell Erlang :
-```erlang
+### Coté Client (IP ex : 192.168.1.20)
+
+erl -name client1@192.168.1.20 -setcookie miam
+
 c(ffclient).
-% On passe commande à la cuisine distante
-ffclient:client({la_cuisine, 'cuisine@192.168.1.XX'}, []).
-```
+ffclient:client({erlfastfood, 'nom_du_noeud@192.168.1.10'}, []).
 
----
-*Note : Assurez-vous que les deux ordinateurs acceptent les connexions entrantes sur les ports utilisés par Erlang (généralement via le port 4369 pour EPMD et des ports dynamiques).*
+
+## ATTENTION : Les cookies doivent être les mêmes pour le serveur et les clients.
