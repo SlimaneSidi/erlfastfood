@@ -6,26 +6,41 @@ Projet fast-food en Erlang
 
 ## Option 1 : Test local
 
-c(ffserver).
-c(ffclient).
-ffserver:start().
+    c(ffserver).
+    c(ffclient).
+    c(ffui).
+    ffserver:start_local().
+
+Pour utiliser l'interface graphique au lieu du client console, dans un **second** shell Erlang :
+
+    c(ffui).
+    ffui:start().
 
 ## Option 2 : Mode réseau
 
 ### Coté Serveur (IP ex : 192.168.1.10)
 
-erl -name nom_du_noeud@192.168.1.10 -setcookie nom_cookie
+    erl -name serveur@192.168.1.10 -setcookie test
 
-c(ffserver).
-c(ffclient).
-ffserver:start_remote().
+    c(ffserver).
+    c(ffclient).
+    ffserver:start_remote().
 
-### Coté Client (IP ex : 192.168.1.20)
+### Coté Client console (IP ex : 192.168.1.20)
 
-erl -name client1@192.168.1.20 -setcookie miam
+    erl -name client1@192.168.1.20 -setcookie test
 
-c(ffclient).
-ffclient:client({erlfastfood, 'nom_du_noeud@192.168.1.10'}, []).
+    c(ffclient).
+    ffclient:client({erlfastfood, 'serveur@192.168.1.10'}, []).
 
+### Coté Client UI (IP ex : 192.168.1.20)
 
-## ATTENTION : Les cookies doivent être les mêmes pour le serveur et les clients.
+    erl -name client1@192.168.1.20 -setcookie test
+
+    c(ffui).
+    ffui:start({erlfastfood, 'serveur@192.168.1.10'}).
+
+## ATTENTION
+
+- Les **cookies** doivent être identiques pour le serveur et tous les clients (ici `test`).
+- En cas de problème, vérifier la connexion depuis le client avec `net_adm:ping('serveur@192.168.1.10').` qui doit retourner `pong`. Si `pang` → cookie, nom de nœud, ou firewall (EPMD port 4369).
