@@ -7,17 +7,12 @@
          prix_article/1, calcul_total/1,
          nom_ingredient/1, nom_boisson/1, nom_taille/1, libelle/1]).
 
-%% Prix des bases (les suppléments / boissons sont dans la table menu_item)
--define(PRIX_BURGER,    3.50).
+-define(PRIX_BURGER,    6.50).
 -define(PRIX_FRITES_S,  1.00).
 -define(PRIX_FRITES_M,  1.50).
 -define(PRIX_FRITES_L,  2.20).
 
-%% ====================================================================
-%% Installation / cycle de vie
-%% ====================================================================
-
-%% A appeler une seule fois pour créer le schéma sur disque.
+%% Une seule fois coté serveur
 install() ->
     install([node()]).
 
@@ -48,7 +43,6 @@ creer_table(Nom, Opts) ->
         Other -> io:format("ffdb: create_table ~p -> ~p~n", [Nom, Other])
     end.
 
-%% Démarrage normal (à appeler par le serveur au boot).
 start() ->
     application:start(mnesia),
     case mnesia:wait_for_tables([commande, menu_item], 5000) of
@@ -64,10 +58,6 @@ start() ->
 
 stop() ->
     application:stop(mnesia).
-
-%% ====================================================================
-%% Commandes : persistance
-%% ====================================================================
 
 save_commande(Client, Items) ->
     Id = erlang:unique_integer([positive, monotonic]),
@@ -98,10 +88,6 @@ get_commande(Id) ->
 clear_commandes() ->
     {atomic, ok} = mnesia:clear_table(commande),
     ok.
-
-%% ====================================================================
-%% Menu : catalogue persistant
-%% ====================================================================
 
 seed_menu() ->
     F = fun() ->
@@ -158,10 +144,6 @@ menu_par_defaut() ->
      #menu_item{id = medium, type = frites, name = "Moyenne", price = ?PRIX_FRITES_M},
      #menu_item{id = large,  type = frites, name = "Grande",  price = ?PRIX_FRITES_L}].
 
-%% ====================================================================
-%% Helpers (lecture du catalogue + tarifs)
-%% ====================================================================
-
 lookup_price(Id) ->
     F = fun() -> mnesia:read({menu_item, Id}) end,
     case mnesia:transaction(F) of
@@ -182,7 +164,7 @@ prix_article({frites, Taille}) ->
     lookup_price(Taille);
 prix_article({boisson, Marque}) ->
     lookup_price(Marque);
-%% Compat avec l'ancien protocole texte (atomes nus).
+
 prix_article(burger)  -> ?PRIX_BURGER;
 prix_article(frites)  -> ?PRIX_FRITES_M;
 prix_article(boisson) -> 1.00;

@@ -1,12 +1,12 @@
-%% Records partagés pour la BDD Mnesia du projet Erl-Fast-Food.
+%% BDD Mnesia ErlFastFood
 
 -record(commande, {id,
-                   timestamp,
+                   time,
                    client,
-                   items,
+                   produits,
                    total}).
 
 -record(menu_item, {id,
-                    type,      %% burger_ingredient | boisson | frites
+                    type,      %% burger_ingredient, boisson, frites
                     name,
                     price}).
