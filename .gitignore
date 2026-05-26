@@ -1,4 +1,6 @@
 *.beam
 *.json
+*.dump
 /.claude
 /.vscode
+/Mnesia.*
