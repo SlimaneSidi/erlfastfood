@@ -3,7 +3,7 @@
 -export([start_local/0, start/0, loop/1,
          historique/0, afficher_historique/0]).
 
-%% test sur la meme machine (local)
+%% local
 start_local() ->
     io:format("~n=== FAST-FOOD : La cuisine est ouverte ===~n"),
     ok = init_db(),
@@ -11,7 +11,7 @@ start_local() ->
     register(erlfastfood, ServerPid),
     ffclient:client(erlfastfood, []).
 
-%% Lance le serveur
+%% serveur
 start() ->
     io:format("~n=== FAST-FOOD : La cuisine est ouverte ===~n"),
     ok = init_db(),
@@ -19,17 +19,16 @@ start() ->
     register(erlfastfood, ServerPid),
     io:format("En attente de clients sur le noeud : ~p~n", [node()]).
 
-%% Tente de démarrer Mnesia ; si les tables n'existent pas, lance l'install.
+%% BDD Mnesia
 init_db() ->
     case ffdb:start() of
         ok -> ok;
         {error, {missing_tables, _}} ->
-            io:format("CUISINE : initialisation de la BDD Mnesia...~n"),
+            io:format("Initialisation BDD Mnesia...~n"),
             ffdb:install(),
             ffdb:start()
     end.
 
-%% State = #{ClientPid => [Article, ...]} (commande en cours par client)
 loop(State) ->
     receive
         {From, {burger, Ing}} ->
@@ -43,7 +42,6 @@ loop(State) ->
             io:format("CUISINE : Boisson ~p servie.~n", [Marque]),
             loop(ajouter(From, {boisson, Marque}, State));
 
-        %% Compat avec l'ancien client texte (atomes simples)
         {From, burger} ->
             io:format("CUISINE : Burger prêt.~n"),
             loop(ajouter(From, burger, State));
@@ -90,7 +88,6 @@ supprimer(Client, Article, State) ->
     Cur = maps:get(Client, State, []),
     State#{Client => lists:delete(Article, Cur)}.
 
-%% Accès direct à l'historique depuis le shell.
 historique() ->
     ffdb:list_commandes().
 
