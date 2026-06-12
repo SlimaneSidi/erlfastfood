@@ -94,16 +94,15 @@ historique() ->
 afficher_historique() ->
     Commandes = ffdb:list_commandes(),
     io:format("~n=== Historique des commandes (~p) ===~n", [length(Commandes)]),
-    lists:foreach(fun(#commande{id = Id, timestamp = Ts, client = C,
-                                items = Items, total = Tot}) ->
+    lists:foreach(fun(#commande{id = Id, time = Ts, client = C,
+                                produits = Items, total = Tot}) ->
         io:format("  #~p [~s] client=~p total=~.2f EUR~n     items=~p~n",
                   [Id, format_ts(Ts), C, Tot, Items])
-    end, Commandes),
-    io:format("=====================================~n").
+    end, Commandes).
 
-format_ts({{Y,M,D},{H,Mi,S}}) ->
-    io_lib:format("~4..0w-~2..0w-~2..0w ~2..0w:~2..0w:~2..0w",
-                  [Y,M,D,H,Mi,S]).
+format_ts({{D,M,Y},{H,Mi,S}}) ->
+    io_lib:format("~2..0w-~2..0w-~4..0w ~2..0w:~2..0w:~2..0w",
+                  [D,M,Y,H,Mi,S]).
 
 format_ingredients([]) -> "nature";
 format_ingredients(L)  ->

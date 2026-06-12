@@ -17,6 +17,8 @@ install() ->
     install([node()]).
 
 install(Nodes) ->
+    %% Le schéma disc ne peut être créé que Mnesia arrêté
+    application:stop(mnesia),
     case mnesia:create_schema(Nodes) of
         ok -> ok;
         {error, {_, {already_exists, _}}} -> ok;
@@ -62,11 +64,11 @@ stop() ->
 save_commande(Client, Items) ->
     Id = erlang:unique_integer([positive, monotonic]),
     Total = calcul_total(Items),
-    Rec = #commande{id        = Id,
-                    timestamp = calendar:local_time(),
-                    client    = Client,
-                    items     = Items,
-                    total     = Total},
+    Rec = #commande{id       = Id,
+                    time     = calendar:local_time(),
+                    client   = Client,
+                    produits = Items,
+                    total    = Total},
     F = fun() -> mnesia:write(Rec) end,
     {atomic, ok} = mnesia:transaction(F),
     {Id, Total}.
